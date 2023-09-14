@@ -4,43 +4,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/_10sdp"
     tools:context=".Views.Fragments.ImageUploadFragment">
 
 
-    <ImageView
-        android:id="@+id/imageView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/_250sdp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/uploadButton"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/corner_round_shape"
-        android:backgroundTint="@color/default_color"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:letterSpacing=".2"
-        android:padding="@dimen/_10sdp"
-        android:text="UPLOAD"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_11sdp"
-        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/deleteButton"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/circle_shape"
+            android:backgroundTint="#6D00264D"
+            android:padding="@dimen/_10sdp"
+            android:src="@drawable/baseline_delete_24"
+            android:visibility="gone"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/uploadButton"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/circle_shape"
+            android:backgroundTint="#A99C27B0"
+            android:padding="@dimen/_10sdp"
+            android:src="@drawable/baseline_cloud_upload_24"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:tint="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--    <androidx.appcompat.widget.AppCompatButton-->
+    <!--        android:id="@+id/uploadButton"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="@dimen/_10sdp"-->
+    <!--        android:background="@drawable/corner_round_shape"-->
+    <!--        android:backgroundTint="@color/default_color"-->
+    <!--        android:clickable="true"-->
+    <!--        android:foreground="?android:attr/selectableItemBackground"-->
+    <!--        android:letterSpacing=".2"-->
+    <!--        android:padding="@dimen/_10sdp"-->
+    <!--        android:text="UPLOAD"-->
+    <!--        android:textColor="@color/white"-->
+    <!--        android:textSize="@dimen/_11sdp"-->
+    <!--        android:textStyle="bold"-->
+    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--        app:layout_constraintRight_toRightOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/imageView" />-->
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/addPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_30sdp"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_40sdp"
         app:icon="@drawable/baseline_photo_camera_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

@@ -72,6 +72,10 @@ public class ImageUploadFragment extends Fragment {
                 filepath = Uri.parse(result);
             }
 
+            binding.addPhoto.setVisibility(View.GONE);
+            binding.deleteButton.setVisibility(View.VISIBLE);
+            binding.uploadButton.setVisibility(View.VISIBLE);
+
             binding.imageView.setImageURI(filepath);
         }
 
@@ -108,8 +112,23 @@ public class ImageUploadFragment extends Fragment {
                 }
         );
 
+        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearData();
+            }
+        });
+
 
         return view;
+    }
+
+    private void clearData() {
+        binding.addPhoto.setVisibility(View.VISIBLE);
+        binding.uploadButton.setVisibility(View.GONE);
+        binding.deleteButton.setVisibility(View.GONE);
+        filepath = null;
+        binding.imageView.setImageURI(null);
     }
 
     private void initView(View view) {
@@ -148,32 +167,16 @@ public class ImageUploadFragment extends Fragment {
     }
 
 
-    private void startCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            // Create a file to save the image
-            File photoFile = createImageFile();
-            if (photoFile != null) {
-                Uri photoUri = FileProvider.getUriForFile(requireActivity(),
-                        "your.file.provider.authority", photoFile);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                cameraContent.launch(cameraIntent);
-            }
-        }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("dataxx", "onDestroy: ");
     }
 
-    private File createImageFile() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "IMG_" + timeStamp + "_";
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File imageFile = null;
-        try {
-            imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
-            yourCameraOutputFilePath = imageFile.getAbsolutePath();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return imageFile;
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("dataxx", "onDetach: ");
     }
-
 }
