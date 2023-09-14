@@ -30,4 +30,13 @@
 
     </fragment>
 
+
+    <fragment
+        android:id="@+id/fragment_image_upload"
+        android:name="com.scanner.scanner.Views.Fragments.ImageUploadFragment"
+        android:label="fragment_image_upload"
+        tools:layout="@layout/fragment_image_upload">
+
+    </fragment>
+
 </navigation>

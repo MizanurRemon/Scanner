@@ -11,6 +11,11 @@
             android:title="Profile" />
 
         <item
+            android:id="@+id/nav_upload"
+            android:icon="@drawable/baseline_cloud_upload_24"
+            android:title="Upload" />
+
+        <item
             android:id="@+id/nav_reset_password"
             android:icon="@drawable/ic_key"
             android:title="Password Reset" />

@@ -1,18 +1,22 @@
 package com.scanner.scanner.Views.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.Navigation;
 
 import static androidx.navigation.Navigation.findNavController;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,6 +44,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         configureMenu();
 
+        getPermission();
+    }
+
+    private void getPermission() {
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+              //  Manifest.permission.POST_NOTIFICATIONS,
+                //Manifest.permission.READ_MEDIA_IMAGES
+        }, 1);
 
     }
 
@@ -82,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         } else if (item.getItemId() == R.id.nav_reset_password) {
             findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_reset_password);
+        }else if(item.getItemId() == R.id.nav_upload){
+            findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_image_upload);
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START);
