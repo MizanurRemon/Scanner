@@ -100,15 +100,20 @@ public class ImageUploadFragment extends Fragment {
         });
 
         mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-            Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
-            intent.putExtra(Constants.DATA, result.toString());
-            startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
+            if(result != null){
+                Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
+                intent.putExtra(Constants.DATA, result.toString());
+                startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
+            }
         });
 
         cameraContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                    Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
-                    intent.putExtra(Constants.DATA, filepath.toString());
-                    startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
+            Log.d("dataxx", "onCreateView: "+filepath.toString());
+                   if(filepath != null){
+                       Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
+                       intent.putExtra(Constants.DATA, filepath.toString());
+                       startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
+                   }
                 }
         );
 

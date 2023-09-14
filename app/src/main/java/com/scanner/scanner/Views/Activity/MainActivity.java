@@ -1,11 +1,11 @@
 package com.scanner.scanner.Views.Activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -13,13 +13,7 @@ import static androidx.navigation.Navigation.findNavController;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -45,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureMenu();
 
         getPermission();
+
     }
 
     private void getPermission() {
@@ -88,17 +83,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == R.id.nav_home) {
-            findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_home);
+            findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_home);
         } else if (item.getItemId() == R.id.nav_profile) {
-            findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_profile);
+            findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_profile);
         } else if (item.getItemId() == R.id.nav_logout) {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         } else if (item.getItemId() == R.id.nav_reset_password) {
-            findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_reset_password);
+            findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_reset_password);
         }else if(item.getItemId() == R.id.nav_upload){
-            findNavController(MainActivity.this, R.id.activity_main_nav_host_fragment).navigate(R.id.fragment_image_upload);
+            findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_image_upload);
         }
 
         binding.drawerLayout.closeDrawer(GravityCompat.START);
