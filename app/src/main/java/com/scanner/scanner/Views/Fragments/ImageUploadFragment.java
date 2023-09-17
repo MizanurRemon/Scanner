@@ -108,7 +108,6 @@ public class ImageUploadFragment extends Fragment {
         });
 
         cameraContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            Log.d("dataxx", "onCreateView: "+filepath.toString());
                    if(filepath != null){
                        Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
                        intent.putExtra(Constants.DATA, filepath.toString());

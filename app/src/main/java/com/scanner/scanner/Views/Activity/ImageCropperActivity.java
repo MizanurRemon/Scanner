@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.databinding.ActivityImageCropperBinding;
@@ -36,6 +37,7 @@ public class ImageCropperActivity extends AppCompatActivity {
         } else if (resultCode == UCrop.RESULT_ERROR) {
 
             final Throwable throwable = UCrop.getError(data);
+            Toast.makeText(getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }
