@@ -71,6 +71,9 @@ dependencies {
     //noinspection GradleDependency
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
-    implementation 'com.github.dhaval2404:imagepicker:2.1'
-    implementation 'com.github.yalantis:ucrop:2.2.6-native'
+//    implementation 'com.github.dhaval2404:imagepicker:2.1'
+//    implementation 'com.github.yalantis:ucrop:2.2.6-native'
+    implementation 'com.github.krokyze:ucropnedit:2.2.8'
+
+
 }

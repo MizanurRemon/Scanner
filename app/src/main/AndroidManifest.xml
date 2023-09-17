@@ -23,12 +23,15 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Scanner"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31"
-        android:requestLegacyExternalStorage="true">
+        tools:targetApi="31">
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:exported="false" />
         <activity
             android:name=".Views.Activity.ImageCropperActivity"
             android:exported="false" />
@@ -40,7 +43,7 @@
         </activity>
         <activity
             android:name=".Views.Activity.MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

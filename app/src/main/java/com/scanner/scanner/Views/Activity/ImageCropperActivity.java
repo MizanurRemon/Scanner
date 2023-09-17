@@ -6,13 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.scanner.scanner.R;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.databinding.ActivityImageCropperBinding;
 import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.model.AspectRatio;
+import com.yalantis.ucrop.view.CropImageView;
 
 import java.io.File;
 import java.util.UUID;
@@ -37,7 +39,11 @@ public class ImageCropperActivity extends AppCompatActivity {
         } else if (resultCode == UCrop.RESULT_ERROR) {
 
             final Throwable throwable = UCrop.getError(data);
-            Toast.makeText(getApplicationContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.no_image_selected), Toast.LENGTH_SHORT).show();
+            finish();
+        }else {
+            Toast.makeText(getApplicationContext(), getString(R.string.no_image_selected), Toast.LENGTH_SHORT).show();
+            finish();
         }
 
     }
@@ -54,9 +60,16 @@ public class ImageCropperActivity extends AppCompatActivity {
         String dest_uri = new StringBuilder(UUID.randomUUID().toString()).append(".jpg").toString();
 
         UCrop.Options options = new UCrop.Options();
+        options.setFreeStyleCropEnabled(true);
+        options.setAspectRatioOptions(2,
+                new AspectRatio("WOW", 1, 2),
+                new AspectRatio("MUCH", 3, 4),
+                new AspectRatio("RATIO", CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO),
+                new AspectRatio("SO", 16, 9),
+                new AspectRatio("ASPECT", 1, 1));
+        options.withAspectRatio(CropImageView.DEFAULT_ASPECT_RATIO, CropImageView.DEFAULT_ASPECT_RATIO);
         UCrop.of(fileUri, Uri.fromFile(new File(getCacheDir(), dest_uri)))
                 .withOptions(options)
-                .withAspectRatio(0, 0)
                 .useSourceImageAspectRatio()
                 .withMaxResultSize(2000, 2000)
                 .start(ImageCropperActivity.this);
