@@ -6,4 +6,11 @@ public class Helpers {
 
         return imgToString;
     }
+
+    public static Boolean validatePhoneNumber(String phone) {
+
+        String REGEX = "^(?:\\+8801|8801|01)[^012]{1}[0-9]{8}$";
+
+        return phone.matches(REGEX);
+    }
 }

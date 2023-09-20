@@ -11,4 +11,6 @@
     <string name="no_image_selected">No Image Selected</string>
     <string name="user">User</string>
     <string name="admin">Admin</string>
+    <string name="empty_field">Empty field</string>
+    <string name="phone">Phone</string>
 </resources>
