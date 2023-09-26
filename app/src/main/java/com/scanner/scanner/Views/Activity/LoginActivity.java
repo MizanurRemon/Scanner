@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.scanner.scanner.R;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Utils.Helpers;
@@ -32,23 +31,15 @@ public class LoginActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        binding.logInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-        });
+        binding.logInButton.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), MainActivity.class)));
 
         toggleController();
 
-        binding.logInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (userType.equals(getApplicationContext().getResources().getString(R.string.user))) {
-                    userLogin();
-                } else {
-                    adminLogin();
-                }
+        binding.logInButton.setOnClickListener(v -> {
+            if (userType.equals(getApplicationContext().getResources().getString(R.string.user))) {
+                userLogin();
+            } else {
+                adminLogin();
             }
         });
 
@@ -113,23 +104,20 @@ public class LoginActivity extends AppCompatActivity {
             binding.passwordLayout.setVisibility(View.VISIBLE);
             userType = getApplicationContext().getResources().getString(R.string.admin);
         }
-        binding.toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
-            @Override
-            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+        binding.toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
 
-                if (isChecked) {
-                    if (group.getCheckedButtonId() == R.id.userButton) {
-                        userType = getApplicationContext().getResources().getString(R.string.user);
-                        binding.passwordLayout.setVisibility(View.GONE);
+            if (isChecked) {
+                if (group.getCheckedButtonId() == R.id.userButton) {
+                    userType = getApplicationContext().getResources().getString(R.string.user);
+                    binding.passwordLayout.setVisibility(View.GONE);
 
-                    } else if (group.getCheckedButtonId() == R.id.adminButton) {
-                        binding.passwordLayout.setVisibility(View.VISIBLE);
-                        userType = getApplicationContext().getResources().getString(R.string.admin);
-                    }
+                } else if (group.getCheckedButtonId() == R.id.adminButton) {
+                    binding.passwordLayout.setVisibility(View.VISIBLE);
+                    userType = getApplicationContext().getResources().getString(R.string.admin);
                 }
-
-
             }
+
+
         });
 
     }
