@@ -13,6 +13,7 @@ import static androidx.navigation.Navigation.findNavController;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         getPermission();
 
+        setAppVersion();
+
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setAppVersion() {
+
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            binding.versionText.setText(getResources().getString(R.string.version)+": "+packageInfo.versionName + "+" + String.valueOf(packageInfo.versionCode));
+        } catch (Exception ignored) {
+
+        }
+
     }
 
     private void getPermission() {
@@ -47,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-              //  Manifest.permission.POST_NOTIFICATIONS,
+                //  Manifest.permission.POST_NOTIFICATIONS,
                 //Manifest.permission.READ_MEDIA_IMAGES
         }, 1);
 
@@ -92,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         } else if (item.getItemId() == R.id.nav_reset_password) {
             findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_reset_password);
-        }else if(item.getItemId() == R.id.nav_upload){
+        } else if (item.getItemId() == R.id.nav_upload) {
             findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_image_upload);
         }
 

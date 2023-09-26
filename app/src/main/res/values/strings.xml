@@ -13,4 +13,5 @@
     <string name="admin">Admin</string>
     <string name="empty_field">Empty field</string>
     <string name="phone">Phone</string>
+    <string name="version">Version</string>
 </resources>
