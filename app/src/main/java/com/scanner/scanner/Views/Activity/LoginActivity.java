@@ -41,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 adminLogin();
             }
+
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
         });
 
         binding.phoneEditText.addTextChangedListener(new TextWatcher() {
