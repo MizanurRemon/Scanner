@@ -3,8 +3,10 @@ package com.scanner.scanner.Views.Fragments;
 import static com.scanner.scanner.Utils.Constants.IMAGE_REQ_CODE;
 import static com.scanner.scanner.Utils.Constants.RESULT;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,16 +25,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.scanner.scanner.Adapter.ImageAdapter;
+import com.scanner.scanner.R;
 import com.scanner.scanner.Utils.Constants;
+import com.scanner.scanner.Utils.Helpers;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
 import com.scanner.scanner.databinding.FragmentImageUploadBinding;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ImageUploadFragment extends Fragment {
+public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImageItemClickListener, ImageAdapter.OnImageDeleteClickListener {
 
 
     FragmentImageUploadBinding binding;
@@ -60,13 +69,19 @@ public class ImageUploadFragment extends Fragment {
 
             setImageAdapter(imageList);
 
-            binding.imageView.setImageURI(imageList.get(imageList.size() - 1));
+            setImage(imageList.get(imageList.size() - 1));
+
         }
 
     }
 
+    private void setImage(Uri uri) {
+        binding.imageView.setImageURI(uri);
+    }
+
     private void setImageAdapter(List<Uri> imageList) {
         imageAdapter = new ImageAdapter(imageList);
+        imageAdapter.setOnItemClickListener(ImageUploadFragment.this::onImageItemClick, ImageUploadFragment.this::onDeleteImageClick);
         binding.imageListView.setAdapter(imageAdapter);
     }
 
@@ -105,6 +120,21 @@ public class ImageUploadFragment extends Fragment {
                 }
         );
 
+        binding.uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (imageList.isEmpty()) {
+                    Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
+                } else {
+                    for (int i = 0; i < imageList.size(); i++) {
+                        String data = Helpers.fileUriToBase64(imageList.get(i), getActivity().getContentResolver());
+
+                    }
+                }
+            }
+        });
+
 
         return view;
     }
@@ -116,7 +146,7 @@ public class ImageUploadFragment extends Fragment {
 
     private void initView(View view) {
         binding.imageListView.setHasFixedSize(true);
-        binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+        binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
     }
 
     private void imageSelect() {
@@ -162,5 +192,25 @@ public class ImageUploadFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         Log.d("dataxx", "onDetach: ");
+    }
+
+    @Override
+    public void onImageItemClick(int position) {
+        Uri uri = imageList.get(position);
+        setImage(uri);
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public void onDeleteImageClick(int position) {
+        imageList.remove(position);
+
+        if (imageList.size() > 0) {
+            setImage(imageList.get(imageList.size() - 1));
+        } else {
+            binding.imageView.setImageDrawable(getActivity().getDrawable(R.drawable.ic_no_image));
+        }
+
+        setImageAdapter(imageList);
     }
 }
