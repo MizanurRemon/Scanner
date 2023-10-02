@@ -1,7 +1,8 @@
 package com.scanner.scanner.Views.Fragments;
 
-import static com.scanner.scanner.Utils.Constants.GALLERY_IMAGE_REQ_CODE;
+import static com.scanner.scanner.Utils.Constants.IMAGE_REQ_CODE;
 import static com.scanner.scanner.Utils.Constants.RESULT;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 
 import android.provider.MediaStore;
@@ -22,9 +24,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.scanner.scanner.Adapter.ImageAdapter;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
 import com.scanner.scanner.databinding.FragmentImageUploadBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageUploadFragment extends Fragment {
 
@@ -37,23 +43,31 @@ public class ImageUploadFragment extends Fragment {
 
     String yourCameraOutputFilePath;
 
+    List<Uri> imageList = new ArrayList<>();
+    ImageAdapter imageAdapter;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == -1 && requestCode == GALLERY_IMAGE_REQ_CODE) {
+        if (resultCode == -1 && requestCode == IMAGE_REQ_CODE) {
             String result = data.getStringExtra(RESULT);
             if (result != null) {
                 filepath = Uri.parse(result);
             }
 
-            binding.addPhoto.setVisibility(View.GONE);
-            binding.deleteButton.setVisibility(View.VISIBLE);
-            binding.uploadButton.setVisibility(View.VISIBLE);
+            imageList.add(filepath);
 
-            binding.imageView.setImageURI(filepath);
+            setImageAdapter(imageList);
+
+            binding.imageView.setImageURI(imageList.get(imageList.size() - 1));
         }
 
+    }
+
+    private void setImageAdapter(List<Uri> imageList) {
+        imageAdapter = new ImageAdapter(imageList);
+        binding.imageListView.setAdapter(imageAdapter);
     }
 
 
@@ -75,42 +89,34 @@ public class ImageUploadFragment extends Fragment {
         });
 
         mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
-            if(result != null){
+            if (result != null) {
                 Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
                 intent.putExtra(Constants.DATA, result.toString());
-                startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
+                startActivityForResult(intent, IMAGE_REQ_CODE);
             }
         });
 
         cameraContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                   if(filepath != null){
-                       Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
-                       intent.putExtra(Constants.DATA, filepath.toString());
-                       startActivityForResult(intent, GALLERY_IMAGE_REQ_CODE);
-                   }
+                    if (filepath != null) {
+                        Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
+                        intent.putExtra(Constants.DATA, filepath.toString());
+                        startActivityForResult(intent, IMAGE_REQ_CODE);
+                    }
                 }
         );
-
-        binding.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearData();
-            }
-        });
 
 
         return view;
     }
 
     private void clearData() {
-        binding.addPhoto.setVisibility(View.VISIBLE);
-        binding.uploadButton.setVisibility(View.GONE);
-        binding.deleteButton.setVisibility(View.GONE);
         filepath = null;
         binding.imageView.setImageURI(null);
     }
 
     private void initView(View view) {
+        binding.imageListView.setHasFixedSize(true);
+        binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 4));
     }
 
     private void imageSelect() {
@@ -144,7 +150,6 @@ public class ImageUploadFragment extends Fragment {
         builder.show();
 
     }
-
 
 
     @Override
