@@ -6,7 +6,6 @@ import static com.scanner.scanner.Utils.Constants.RESULT;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.scanner.scanner.Adapter.ImageAdapter;
@@ -32,14 +33,12 @@ import com.scanner.scanner.R;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Utils.Helpers;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
+import com.scanner.scanner.Views.Activity.PdfViewerActivity;
 import com.scanner.scanner.databinding.FragmentImageUploadBinding;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImageItemClickListener, ImageAdapter.OnImageDeleteClickListener {
 
@@ -47,10 +46,10 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
     FragmentImageUploadBinding binding;
     Bitmap bitmap;
     private Uri filepath;
-    ActivityResultLauncher<String> mGetContent;
+    ActivityResultLauncher<String> galleryContent;
     ActivityResultLauncher<Intent> cameraContent;
 
-    String yourCameraOutputFilePath;
+    ActivityResultLauncher<String> filePickContent;
 
     List<Uri> imageList = new ArrayList<>();
     ImageAdapter imageAdapter;
@@ -64,6 +63,9 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
             if (result != null) {
                 filepath = Uri.parse(result);
             }
+
+            String ext = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(filepath.getPath())).toString());
+            Log.d("dataxx", "onActivityResult: "+ext);
 
             imageList.add(filepath);
 
@@ -103,7 +105,17 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
             }
         });
 
-        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+        filePickContent = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
+            @Override
+            public void onActivityResult(Uri result) {
+                if (result != null) {
+                    openPdfViewer(result);
+
+                }
+            }
+        });
+
+        galleryContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
             if (result != null) {
                 Intent intent = new Intent(getActivity(), ImageCropperActivity.class);
                 intent.putExtra(Constants.DATA, result.toString());
@@ -128,7 +140,8 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
                     Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
                 } else {
                     for (int i = 0; i < imageList.size(); i++) {
-                        String data = Helpers.fileUriToBase64(imageList.get(i), getActivity().getContentResolver());
+
+                        Log.d("dataxx", "onClick: " + Helpers.fileUriToBase64(imageList.get(i), getActivity().getContentResolver()));
 
                     }
                 }
@@ -137,6 +150,12 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
 
 
         return view;
+    }
+
+    private void openPdfViewer(Uri result) {
+       // Log.d("filexx", "openPdfViewer: "+Helpers.pdfToString(new File(result.getPath())));
+        imageList.add(result);
+        setImageAdapter(imageList);
     }
 
     private void clearData() {
@@ -170,8 +189,10 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
 
                 } else if (items[i].equals("Gallery")) {
 
-                    mGetContent.launch("image/*");
+                    galleryContent.launch("image/*");
 
+                } else if (items[i].equals("PDF")) {
+                    filePickContent.launch("application/*");
                 } else if (items[i].equals("Cancel")) {
                     dialog.dismiss();
                 }
