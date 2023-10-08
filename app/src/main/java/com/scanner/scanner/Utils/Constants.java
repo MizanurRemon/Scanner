@@ -10,7 +10,11 @@ public class Constants {
     public static final String RESULT = "result";
     public static final String DATA = "data";
     public static final String EMAIL = "email";
+    public static final String MOBILE_NO = "mobileNo";
     public static final String PASSWORD = "password";
     public static final String USERTYPE = "user_type";
+
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String REFRESH_TOKEN = "refresh_token";
 
 }
