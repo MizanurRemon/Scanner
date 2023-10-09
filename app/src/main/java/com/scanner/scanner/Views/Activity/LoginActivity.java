@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onChanged(AuthResponse authResponse) {
                     loader.dismiss();
                     if (!authResponse.accessToken.isEmpty()) {
-                        sessionManagement.saveToken(authResponse, "admin");
+                        sessionManagement.saveToken(authResponse, "admin", binding.phoneEditText.getText().toString().trim());
 
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();

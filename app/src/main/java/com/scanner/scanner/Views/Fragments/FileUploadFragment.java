@@ -3,14 +3,15 @@ package com.scanner.scanner.Views.Fragments;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.scanner.scanner.Utils.Constants.IMAGE_REQ_CODE;
-import static com.scanner.scanner.Utils.Constants.RESULT;
+import static com.scanner.scanner.Utils.Helpers.getFileExtension;
+import static com.scanner.scanner.Utils.Helpers.getFileName;
+import static com.scanner.scanner.Utils.Helpers.saveImageToGallery;
+import static com.scanner.scanner.Utils.Helpers.uriToBase64;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,46 +21,47 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-
-import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.scanner.scanner.Adapter.ImageAdapter;
-import com.scanner.scanner.R;
+import com.scanner.scanner.Adapter.FileAdapter;
+import com.scanner.scanner.Model.CommonResponse;
+import com.scanner.scanner.Model.FileResponse;
+import com.scanner.scanner.Remote.FileUpload.FileUploadViewModel;
+import com.scanner.scanner.Sessions.SessionManagement;
 import com.scanner.scanner.Utils.Constants;
-import com.scanner.scanner.Utils.Helpers;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
-import com.scanner.scanner.Views.Activity.PdfViewerActivity;
-import com.scanner.scanner.databinding.FragmentImageUploadBinding;
-import com.yalantis.ucrop.util.FileUtils;
+import com.scanner.scanner.databinding.FragmentFileUploadBinding;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
-public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImageItemClickListener, ImageAdapter.OnImageDeleteClickListener {
+public class FileUploadFragment extends Fragment implements FileAdapter.OnImageItemClickListener, FileAdapter.OnImageDeleteClickListener {
 
 
-    FragmentImageUploadBinding binding;
-    Bitmap bitmap;
+    FragmentFileUploadBinding binding;
+
     private Uri filepath;
     ActivityResultLauncher<String> galleryContent;
     ActivityResultLauncher<Intent> cameraContent;
 
     ActivityResultLauncher<String> filePickContent;
 
-    List<Uri> imageList = new ArrayList<>();
-    ImageAdapter imageAdapter;
+    FileAdapter imageAdapter;
+
+    List<FileResponse> fileList = new ArrayList<>();
+
+    FileUploadViewModel fileUploadViewModel;
+    SessionManagement sessionManagement;
 
     @SuppressLint("Range")
     @Override
@@ -68,46 +70,37 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
 
         if (resultCode != RESULT_CANCELED) {
             if (resultCode == RESULT_OK && requestCode == IMAGE_REQ_CODE) {
-                String result = data.getStringExtra(RESULT);
-                if (result != null) {
-                    filepath = Uri.parse(result);
+
+                Bundle bundle = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) bundle.get("data");
+
+                Uri uri = saveImageToGallery(imageBitmap);
+
+                if (uri != null) {
+                    String str = uriToBase64(uri, getActivity());
+                    String ext = getFileExtension(getActivity(), uri);
+                    fileList.add(new FileResponse(getFileName(uri, getActivity()), str, ext));
+
+                    setFileAdapter(fileList);
+
+                    Toast.makeText(getActivity(), getFileName(uri, getActivity()) + " file picked", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), " file not picked", Toast.LENGTH_SHORT).show();
                 }
-
-                String ext = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(new File(filepath.getPath())).toString());
-                Log.d("dataxx", "onActivityResult: " + ext);
-
-                imageList.add(filepath);
-
-                setImageAdapter(imageList);
-
-                setImage(imageList.get(imageList.size() - 1));
 
             } else if (resultCode == RESULT_OK && requestCode == 12) {
 
-
-
                 if (data != null) {
                     Uri uri = data.getData();
-                    String uriString = uri.toString();
-                    File myFile = new File(uriString);
-                    String displayName = null;
 
-                    if (uriString.startsWith("content://")) {
-                        try (Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null)) {
-                            if (cursor != null && cursor.moveToFirst()) {
-                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                            }
-                        }
-                    } else if (uriString.startsWith("file://")) {
-                        displayName = myFile.getName();
-                    }
+                    String str = uriToBase64(data.getData(), getActivity());
+                    String ext = getFileExtension(getActivity(), uri);
 
+                    fileList.add(new FileResponse(getFileName(uri, getActivity()), str, ext));
 
+                    setFileAdapter(fileList);
 
-                    String str = Helpers.convertPdfToBase64(data.getData(), getActivity());
-                    Log.d("dtaxx", "onActivityResult: "+" "+str);
-
-                    Toast.makeText(getActivity(), displayName+" file picked" +str, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getFileName(uri, getActivity()) + " file picked", Toast.LENGTH_SHORT).show();
 
                 } else {
                     Toast.makeText(getActivity(), "file not picked", Toast.LENGTH_SHORT).show();
@@ -119,12 +112,12 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
     }
 
     private void setImage(Uri uri) {
-        binding.imageView.setImageURI(uri);
+
     }
 
-    private void setImageAdapter(List<Uri> imageList) {
-        imageAdapter = new ImageAdapter(imageList);
-        imageAdapter.setOnItemClickListener(ImageUploadFragment.this::onImageItemClick, ImageUploadFragment.this::onDeleteImageClick);
+    private void setFileAdapter(List<FileResponse> fileList) {
+        imageAdapter = new FileAdapter(fileList);
+        imageAdapter.setOnItemClickListener(FileUploadFragment.this::onImageItemClick, FileUploadFragment.this::onDeleteImageClick);
         binding.imageListView.setAdapter(imageAdapter);
     }
 
@@ -132,7 +125,7 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentImageUploadBinding.inflate(getLayoutInflater());
+        binding = FragmentFileUploadBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
 
         initView(view);
@@ -176,14 +169,22 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
             @Override
             public void onClick(View v) {
 
-                if (imageList.isEmpty()) {
+                if (fileList.isEmpty()) {
                     Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
                 } else {
-                    for (int i = 0; i < imageList.size(); i++) {
 
-                        Log.d("dataxx", "onClick: " + Helpers.fileUriToBase64(imageList.get(i), getActivity().getContentResolver()));
+                    Map<String, Object> body = new HashMap<>();
+                    body.put(Constants.MOBILE_NO, sessionManagement.getPhone());
+                    body.put(Constants.INVOICE_DATE, "");
+                    body.put(Constants.INVOICE_NO, "");
+                    body.put(Constants.FILES, fileList);
 
-                    }
+                    fileUploadViewModel.uploadInvoice(body).observe(getViewLifecycleOwner(), new Observer<CommonResponse>() {
+                        @Override
+                        public void onChanged(CommonResponse commonResponse) {
+
+                        }
+                    });
                 }
             }
         });
@@ -193,30 +194,24 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
     }
 
     private void selectPdf() {
-        Intent intent = new Intent();
-        intent.setType("application/pdf");
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(Intent.createChooser(intent, "Choose File to Upload.."), 12);
     }
 
-    private void openPdfViewer(Uri result) {
-        imageList.add(result);
-        setImageAdapter(imageList);
-    }
-
-    private void clearData() {
-        filepath = null;
-        binding.imageView.setImageURI(null);
-    }
-
     private void initView(View view) {
+        sessionManagement = new SessionManagement(getActivity());
+        fileUploadViewModel = new ViewModelProvider(getActivity()).get(FileUploadViewModel.class);
         binding.imageListView.setHasFixedSize(true);
-        binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
     }
 
     private void imageSelect() {
-        final CharSequence[] items = {"Camera", "Gallery", "PDF", "Cancel"};
+        //final CharSequence[] items = {"Camera", "Gallery", "File", "Cancel"};
+        final CharSequence[] items = {"Camera", "File", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Add Image");
         builder.setItems(items, new DialogInterface.OnClickListener() {
@@ -225,20 +220,22 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
 
                 if (items[i].equals("Camera")) {
 
-                    ContentValues values = new ContentValues();
+                    /*ContentValues values = new ContentValues();
                     values.put(MediaStore.Images.Media.TITLE, "New Picture");
                     values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
                     filepath = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, filepath);
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, filepath);*/
 
-                    cameraContent.launch(cameraIntent);
+                    // cameraContent.launch(cameraIntent);
+                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, IMAGE_REQ_CODE);
 
                 } else if (items[i].equals("Gallery")) {
 
                     galleryContent.launch("image/*");
 
-                } else if (items[i].equals("PDF")) {
+                } else if (items[i].equals("File")) {
                     // filePickContent.launch("application/*");
                     selectPdf();
                 } else if (items[i].equals("Cancel")) {
@@ -265,21 +262,12 @@ public class ImageUploadFragment extends Fragment implements ImageAdapter.OnImag
 
     @Override
     public void onImageItemClick(int position) {
-        Uri uri = imageList.get(position);
-        setImage(uri);
+
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onDeleteImageClick(int position) {
-        imageList.remove(position);
 
-        if (imageList.size() > 0) {
-            setImage(imageList.get(imageList.size() - 1));
-        } else {
-            binding.imageView.setImageDrawable(getActivity().getDrawable(R.drawable.ic_no_image));
-        }
-
-        setImageAdapter(imageList);
     }
 }

@@ -33,9 +33,9 @@
 
     <fragment
         android:id="@+id/fragment_image_upload"
-        android:name="com.scanner.scanner.Views.Fragments.ImageUploadFragment"
+        android:name="com.scanner.scanner.Views.Fragments.FileUploadFragment"
         android:label="fragment_image_upload"
-        tools:layout="@layout/fragment_image_upload">
+        tools:layout="@layout/fragment_file_upload">
 
     </fragment>
 

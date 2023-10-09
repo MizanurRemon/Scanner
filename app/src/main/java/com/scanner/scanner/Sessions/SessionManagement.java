@@ -24,16 +24,20 @@ public class SessionManagement {
         editor.putString(SESSION_USER_ID, userID).commit();
     }
 
-    public void saveToken(AuthResponse authResponse, String userType) {
+    public void saveToken(AuthResponse authResponse, String userType, String phone) {
         editor.putString(Constants.REFRESH_TOKEN, authResponse.refreshToken);
         editor.putString(Constants.ACCESS_TOKEN, authResponse.accessToken);
         editor.putString(Constants.USERTYPE, userType);
-
+        editor.putString(Constants.PHONE, phone);
         editor.commit();
     }
 
     public String getAccessToken() {
         return sharedPreferences.getString(Constants.ACCESS_TOKEN, "-1");
+    }
+
+    public String getPhone() {
+        return sharedPreferences.getString(Constants.PHONE, "-1");
     }
 
     public String getUserType() {
@@ -44,6 +48,7 @@ public class SessionManagement {
         editor.putString(Constants.ACCESS_TOKEN, "-1").commit();
         editor.putString(Constants.REFRESH_TOKEN, "-1").commit();
         editor.putString(Constants.USERTYPE, "-1").commit();
+        editor.putString(Constants.PHONE, "-1").commit();
     }
 
 }
