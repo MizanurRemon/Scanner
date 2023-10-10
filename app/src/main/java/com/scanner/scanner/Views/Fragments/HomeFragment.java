@@ -1,7 +1,7 @@
 package com.scanner.scanner.Views.Fragments;
 
-import static com.scanner.scanner.Utils.Helpers.convertStringToPDF;
-import static com.scanner.scanner.Utils.Helpers.getFileFromBase64AndSaveInSDCard;
+import static com.scanner.scanner.Utils.Helpers.convertImageStringToPDF;
+import static com.scanner.scanner.Utils.Helpers.convertPdfStringToPDF;
 
 import android.os.Bundle;
 
@@ -13,13 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.scanner.scanner.Adapter.FileListAdapter;
 import com.scanner.scanner.Model.FileListResponse;
-import com.scanner.scanner.R;
 import com.scanner.scanner.Remote.FileUpload.FileViewModel;
-import com.scanner.scanner.databinding.FragmentFileUploadBinding;
+import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.databinding.FragmentHomeBinding;
 
 import java.util.ArrayList;
@@ -55,6 +53,7 @@ public class HomeFragment extends Fragment implements FileListAdapter.OnPDFItemC
                 fileList = new ArrayList<>();
                 fileList = fileListResponses;
                 fileListAdapter = new FileListAdapter(fileList);
+                fileListAdapter.setOnItemClickListener(HomeFragment.this::onPDFItemClick);
                 binding.itemView.setAdapter(fileListAdapter);
 
             }
@@ -71,6 +70,16 @@ public class HomeFragment extends Fragment implements FileListAdapter.OnPDFItemC
     public void onPDFItemClick(int position) {
 
         FileListResponse response = fileList.get(position);
-        getFileFromBase64AndSaveInSDCard(response.file,  response.fileName, ".pdf");
+      /*  GetFilePathAndStatus getFilePathAndStatus = getFileFromBase64AndSaveInSDCard(response.file,  response.fileName, "pdf");
+        Toast.makeText(getActivity(), getFilePathAndStatus.filePath, Toast.LENGTH_SHORT).show();*/
+
+        if (response.fileType.equals(Constants.PDF)) {
+            convertPdfStringToPDF(response.file, getActivity(), response.fileName);
+        } else {
+            //Toast.makeText(getActivity(), "developing", Toast.LENGTH_SHORT).show();
+            convertImageStringToPDF(response.file, getActivity(), response.fileName);
+        }
+
+
     }
 }

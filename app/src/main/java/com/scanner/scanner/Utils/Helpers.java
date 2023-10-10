@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.OpenableColumns;
@@ -15,7 +16,9 @@ import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
+import com.scanner.scanner.Model.GetFilePathAndStatus;
 import com.scanner.scanner.R;
 
 import java.io.ByteArrayOutputStream;
@@ -145,44 +148,41 @@ public class Helpers {
 
     }
 
-    public static void convertStringToPDF(String imgString, Context context, String fileName) {
+    public static void convertPdfStringToPDF(String imgString, Context context, String fileName) {
         try {
-            final File dwldsPath = new File(context.getExternalFilesDir(null) + fileName + ".pdf");
-            byte[] pdfAsBytes = Base64.decode(imgString, 0);
-            FileOutputStream os;
-            os = new FileOutputStream(dwldsPath, false);
-            os.write(pdfAsBytes);
-            os.flush();
-            os.close();
 
-            //byte[] pdfData = Base64.decode(imgString, Base64.DEFAULT);
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
 
-            // Create a file to save the PDF
-            // File pdfFile = new File(context.getExternalFilesDir(null), fileName);
+            if (!file.exists()) {
+                byte[] pdfAsBytes = Base64.decode(imgString, 0);
+                FileOutputStream os = new FileOutputStream(file, false);
+                os.write(pdfAsBytes);
+                os.flush();
+                os.close();
 
-            // Write the byte array to the PDF file
-            /*FileOutputStream outputStream = new FileOutputStream(pdfFile);
-            outputStream.write(pdfData);
-            outputStream.close();*/
+                Toast.makeText(context, "file  saved at " + Environment.DIRECTORY_DOCUMENTS, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "file already  saved at " + Environment.DIRECTORY_DOCUMENTS, Toast.LENGTH_SHORT).show();
+            }
+
         } catch (Exception e) {
             Log.d("dataxx", "convertStringToPDF: " + e.getMessage());
         }
     }
 
     public static GetFilePathAndStatus getFileFromBase64AndSaveInSDCard(String base64, String filename, String extension) {
+        filename = filename.replace(".", "");
         GetFilePathAndStatus getFilePathAndStatus = new GetFilePathAndStatus();
         try {
             byte[] pdfAsBytes = Base64.decode(base64, 0);
-            FileOutputStream os;
-            os = new FileOutputStream(getReportPath(filename, extension), false);
+            FileOutputStream os = new FileOutputStream(getReportPath(filename, extension), false);
             os.write(pdfAsBytes);
             os.flush();
             os.close();
             getFilePathAndStatus.filStatus = true;
             getFilePathAndStatus.filePath = getReportPath(filename, extension);
             return getFilePathAndStatus;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             getFilePathAndStatus.filStatus = false;
             getFilePathAndStatus.filePath = getReportPath(filename, extension);
             return getFilePathAndStatus;
@@ -198,9 +198,68 @@ public class Helpers {
         return uriSting;
     }
 
-    public static class GetFilePathAndStatus {
-        public boolean filStatus;
-        public String filePath;
+
+    public static void convertImageStringToPDF(String imgString, Context context, String fileName) {
+        try {
+
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), removeImageExtension(fileName));
+
+            if (!file.exists()) {
+                byte[] imageBytes = Base64.decode(imgString, Base64.DEFAULT);
+                Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
+                PdfDocument document = new PdfDocument();
+                PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(imageBitmap.getWidth(), imageBitmap.getHeight(), 1).create();
+
+                PdfDocument.Page page = document.startPage(pageInfo);
+
+                imageBitmap = Bitmap.createScaledBitmap(imageBitmap, pageInfo.getPageWidth(), pageInfo.getPageHeight(), true);
+                page.getCanvas().drawBitmap(imageBitmap, 0, 0, null);
+
+                document.finishPage(page);
+
+
+                try {
+                    FileOutputStream fos = new FileOutputStream(file);
+                    document.writeTo(fos);
+                    document.close();
+                    fos.close();
+                    Toast.makeText(context, "file  saved at " + Environment.DIRECTORY_DOCUMENTS, Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.d("dataxx", "convertStringToPDF: " + e.getMessage());
+                }
+
+
+            } else {
+                Toast.makeText(context, "file already  saved at " + Environment.DIRECTORY_DOCUMENTS, Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            Log.d("dataxx", "convertStringToPDF: " + e.getMessage());
+        }
     }
+
+
+    private static String removeImageExtension(String originalString) {
+        int dotIndex = originalString.lastIndexOf('.');
+        String newExtension = ".pdf";
+
+        if (dotIndex != -1) {
+            // Extract the part of the string before the dot
+            String prefix = originalString.substring(0, dotIndex);
+
+            // Create the new string by concatenating the prefix and the new extension
+            String newString = prefix + newExtension;
+
+            // Output the new string
+            return newString;
+        } else {
+            // Handle the case where there is no dot in the original string
+            System.out.println("Invalid file name");
+
+            return "";
+        }
+    }
+
 
 }
