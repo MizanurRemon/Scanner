@@ -7,29 +7,81 @@
     tools:context=".Views.Fragments.FileUploadFragment">
 
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/headerText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
-        android:background="@drawable/round_shape_with_border"
-        android:hint="Search 1"
-        android:padding="@dimen/_10sdp"
+        android:letterSpacing=".1"
+        android:text="@string/upload_files"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <TextView
+        android:id="@+id/invoiceNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:letterSpacing=".1"
+        android:text="@string/invoice_no"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerText" />
+
+
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/invoiceNoText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_10sdp"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
         android:background="@drawable/round_shape_with_border"
-        android:hint="Search 2"
+        android:hint="@string/invoice_no"
         android:padding="@dimen/_10sdp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText1" />
+        app:layout_constraintTop_toBottomOf="@id/invoiceNo" />
+
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:letterSpacing=".1"
+        android:text="@string/date"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/invoiceNoText" />
+
+    <EditText
+        android:id="@+id/dateText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/round_shape_with_border"
+        android:padding="@dimen/_10sdp"
+        android:text="@string/date"
+        android:clickable="true"
+        android:editable="false"
+        android:focusable="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -40,7 +92,7 @@
         android:layout_marginTop="@dimen/_5sdp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText2" />
+        app:layout_constraintTop_toBottomOf="@id/dateText" />
 
 
     <TextView

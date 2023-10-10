@@ -10,6 +10,7 @@ import static com.scanner.scanner.Utils.Helpers.uriToBase64;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +30,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.scanner.scanner.Adapter.FileAdapter;
@@ -40,9 +43,13 @@ import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
 import com.scanner.scanner.databinding.FragmentFileUploadBinding;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class FileUploadFragment extends Fragment implements FileAdapter.OnImageItemClickListener, FileAdapter.OnImageDeleteClickListener {
@@ -175,8 +182,8 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
                     Map<String, Object> body = new HashMap<>();
                     body.put(Constants.MOBILE_NO, sessionManagement.getPhone());
-                    body.put(Constants.INVOICE_DATE, "");
-                    body.put(Constants.INVOICE_NO, "");
+                    body.put(Constants.INVOICE_DATE, binding.dateText.getText().toString().trim());
+                    body.put(Constants.INVOICE_NO, binding.invoiceNoText.getText().toString().trim());
                     body.put(Constants.FILES, fileList);
 
                     fileUploadViewModel.uploadInvoice(body).observe(getViewLifecycleOwner(), new Observer<CommonResponse>() {
@@ -190,7 +197,22 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
         });
 
 
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat(Constants.DATE_FORMAT);
+        setCurrentDate(formatter.format(new Date()));
+
+        binding.dateText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickDate();
+            }
+        });
+
+
         return view;
+    }
+
+    public void setCurrentDate(String date) {
+        binding.dateText.setText(date);
     }
 
     private void selectPdf() {
@@ -269,5 +291,28 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
     @Override
     public void onDeleteImageClick(int position) {
 
+    }
+
+    private void pickDate() {
+        Calendar myCalendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.US);
+
+                setCurrentDate(sdf.format(myCalendar.getTime()));
+
+            }
+
+        };
+
+        new DatePickerDialog(getActivity(), date, myCalendar
+                .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                myCalendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 }

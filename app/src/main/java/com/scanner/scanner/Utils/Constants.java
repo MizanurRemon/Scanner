@@ -24,5 +24,7 @@ public class Constants {
     public static final String INVOICE_NO = "invoiceNo";
     public static final String FILES = "files";
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+
 
 }
