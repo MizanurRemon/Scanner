@@ -38,9 +38,11 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.ViewHo
         FileListResponse response = fileList.get(position);
         holder.fileNameText.setText(response.fileName);
 
-        if(response.fileType.equals(Constants.PDF)){
+        if (response.fileType.equals(Constants.PDF)) {
 
-        }else {
+            holder.imageView.setImageDrawable(holder.itemView.getContext().getDrawable(R.drawable.ic_pdf));
+
+        } else {
 
             holder.imageView.setImageBitmap(getImageFromString(response.file));
         }
@@ -52,8 +54,18 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.ViewHo
         return fileList.size();
     }
 
+    private OnPDFItemClickListener onPDFItemClickListener;
+
+    public interface OnPDFItemClickListener {
+        void onPDFItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnPDFItemClickListener onPDFItemClickListener) {
+        this.onPDFItemClickListener = onPDFItemClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView  imageView;
+        ImageView imageView;
 
         Button downloadButton;
         TextView fileNameText;
@@ -64,6 +76,18 @@ public class FileListAdapter extends RecyclerView.Adapter<FileListAdapter.ViewHo
             imageView = itemView.findViewById(R.id.imageView);
             downloadButton = itemView.findViewById(R.id.downloadButton);
             fileNameText = itemView.findViewById(R.id.fileNameText);
+
+            downloadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onPDFItemClickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            onPDFItemClickListener.onPDFItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

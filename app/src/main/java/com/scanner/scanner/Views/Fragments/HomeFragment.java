@@ -1,5 +1,8 @@
 package com.scanner.scanner.Views.Fragments;
 
+import static com.scanner.scanner.Utils.Helpers.convertStringToPDF;
+import static com.scanner.scanner.Utils.Helpers.getFileFromBase64AndSaveInSDCard;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -22,7 +25,7 @@ import com.scanner.scanner.databinding.FragmentHomeBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements FileListAdapter.OnPDFItemClickListener {
 
     FileViewModel fileViewModel;
 
@@ -60,5 +63,12 @@ public class HomeFragment extends Fragment {
         binding.itemView.setHasFixedSize(true);
         binding.itemView.setLayoutManager(new LinearLayoutManager(getActivity()));
         fileViewModel = new ViewModelProvider(getActivity()).get(FileViewModel.class);
+    }
+
+    @Override
+    public void onPDFItemClick(int position) {
+
+        FileListResponse response = fileList.get(position);
+        getFileFromBase64AndSaveInSDCard(response.file,  response.fileName, ".pdf");
     }
 }

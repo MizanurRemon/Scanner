@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //  Toast.makeText(this, sessionManagement.getAccessToken()+" "+sessionManagement.getUserType(), Toast.LENGTH_SHORT).show();
 
-        Log.d("dataxx", "token: "+ SessionManagement.getAccessToken());
+     //   Log.d("dataxx", "token: "+ SessionManagement.getAccessToken());
 
     }
 

@@ -39,7 +39,7 @@ public class Helpers {
     }
 
     public static String fileImageUriToBase64(Uri imageUri, ContentResolver resolver) {
-       // Log.d("dataxx", "fileUriToBase64: ");
+        // Log.d("dataxx", "fileUriToBase64: ");
         try {
             final InputStream imageStream = resolver.openInputStream(imageUri);
             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
@@ -47,7 +47,7 @@ public class Helpers {
             selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] b = byteArrayOutputStream.toByteArray();
 
-           // Log.d("dataxx", "fileUriToBase64: " + Base64.encodeToString(b, Base64.DEFAULT));
+            // Log.d("dataxx", "fileUriToBase64: " + Base64.encodeToString(b, Base64.DEFAULT));
             return Base64.encodeToString(b, Base64.DEFAULT);
         } catch (Exception e) {
             Log.d("dataxx", "ERORXX: " + e.getMessage());
@@ -138,15 +138,69 @@ public class Helpers {
         return displayName;
     }
 
-    public static Bitmap getImageFromString(String imgString){
+    public static Bitmap getImageFromString(String imgString) {
 
         byte[] imageBytes = Base64.decode(imgString, Base64.DEFAULT);
-      /*  String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-        //decode base64 string to image
-        imageBytes = Base64.decode(imageString, Base64.DEFAULT);*/
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 
+    }
+
+    public static void convertStringToPDF(String imgString, Context context, String fileName) {
+        try {
+            final File dwldsPath = new File(context.getExternalFilesDir(null) + fileName + ".pdf");
+            byte[] pdfAsBytes = Base64.decode(imgString, 0);
+            FileOutputStream os;
+            os = new FileOutputStream(dwldsPath, false);
+            os.write(pdfAsBytes);
+            os.flush();
+            os.close();
+
+            //byte[] pdfData = Base64.decode(imgString, Base64.DEFAULT);
+
+            // Create a file to save the PDF
+            // File pdfFile = new File(context.getExternalFilesDir(null), fileName);
+
+            // Write the byte array to the PDF file
+            /*FileOutputStream outputStream = new FileOutputStream(pdfFile);
+            outputStream.write(pdfData);
+            outputStream.close();*/
+        } catch (Exception e) {
+            Log.d("dataxx", "convertStringToPDF: " + e.getMessage());
+        }
+    }
+
+    public static GetFilePathAndStatus getFileFromBase64AndSaveInSDCard(String base64, String filename, String extension) {
+        GetFilePathAndStatus getFilePathAndStatus = new GetFilePathAndStatus();
+        try {
+            byte[] pdfAsBytes = Base64.decode(base64, 0);
+            FileOutputStream os;
+            os = new FileOutputStream(getReportPath(filename, extension), false);
+            os.write(pdfAsBytes);
+            os.flush();
+            os.close();
+            getFilePathAndStatus.filStatus = true;
+            getFilePathAndStatus.filePath = getReportPath(filename, extension);
+            return getFilePathAndStatus;
+        } catch (IOException e) {
+            e.printStackTrace();
+            getFilePathAndStatus.filStatus = false;
+            getFilePathAndStatus.filePath = getReportPath(filename, extension);
+            return getFilePathAndStatus;
+        }
+    }
+
+    public static String getReportPath(String filename, String extension) {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "ParentFolder/Report");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        String uriSting = (file.getAbsolutePath() + "/" + filename + "." + extension);
+        return uriSting;
+    }
+
+    public static class GetFilePathAndStatus {
+        public boolean filStatus;
+        public String filePath;
     }
 
 }
