@@ -47,9 +47,11 @@ public class HomeFragment extends Fragment implements FileListAdapter.OnPDFItemC
     }
 
     private void load_data() {
+        binding.progressBar.setVisibility(View.VISIBLE);
         fileViewModel.getFileList(getActivity()).observe(getViewLifecycleOwner(), new Observer<List<FileListResponse>>() {
             @Override
             public void onChanged(List<FileListResponse> fileListResponses) {
+                binding.progressBar.setVisibility(View.GONE);
                 fileList = new ArrayList<>();
                 fileList = fileListResponses;
                 fileListAdapter = new FileListAdapter(fileList);
