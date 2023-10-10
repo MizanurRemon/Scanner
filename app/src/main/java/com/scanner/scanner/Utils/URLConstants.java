@@ -9,4 +9,5 @@ public class URLConstants {
     public static final String LOGIN = V1 + "auth";
     //upload
     public static final String UPLOAD = V1 + REPORTS + "upload";
+    public static final String REPORT_LIST = V1 + REPORTS + "reportList";
 }

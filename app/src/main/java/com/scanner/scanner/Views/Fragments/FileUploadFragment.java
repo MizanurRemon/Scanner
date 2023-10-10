@@ -34,18 +34,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.scanner.scanner.Adapter.FileAdapter;
 import com.scanner.scanner.Model.CommonResponse;
 import com.scanner.scanner.Model.FileResponse;
 import com.scanner.scanner.R;
-import com.scanner.scanner.Remote.FileUpload.FileUploadViewModel;
+import com.scanner.scanner.Remote.FileUpload.FileViewModel;
 import com.scanner.scanner.Sessions.SessionManagement;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
-import com.scanner.scanner.Views.Activity.LoginActivity;
 import com.scanner.scanner.databinding.FragmentFileUploadBinding;
 
 import java.text.SimpleDateFormat;
@@ -72,7 +70,7 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
     List<FileResponse> fileList = new ArrayList<>();
 
-    FileUploadViewModel fileUploadViewModel;
+    FileViewModel fileUploadViewModel;
     SessionManagement sessionManagement;
 
     Dialog loader;
@@ -199,7 +197,15 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
                         public void onChanged(CommonResponse commonResponse) {
                             loader.dismiss();
 
-                            Toast.makeText(getActivity(), commonResponse.statusCode, Toast.LENGTH_SHORT).show();
+                            String message = "";
+
+                            if (commonResponse.statusCode.equals("200")) {
+                                message = "successfully uploaded";
+                            } else {
+                                message = "failed";
+                            }
+
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -236,7 +242,7 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
     private void initView(View view) {
         sessionManagement = new SessionManagement(getActivity());
-        fileUploadViewModel = new ViewModelProvider(getActivity()).get(FileUploadViewModel.class);
+        fileUploadViewModel = new ViewModelProvider(getActivity()).get(FileViewModel.class);
         binding.imageListView.setHasFixedSize(true);
         binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
 

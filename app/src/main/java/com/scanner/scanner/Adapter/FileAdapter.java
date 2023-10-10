@@ -1,7 +1,6 @@
 package com.scanner.scanner.Adapter;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +74,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.ViewHolder> {
             super(itemView);
 
             imageView = itemView.findViewById(R.id.imageView);
-            deleteButton = itemView.findViewById(R.id.deleteButton);
+            deleteButton = itemView.findViewById(R.id.downloadButton);
             fileNameText = itemView.findViewById(R.id.fileNameText);
 
             imageView.setOnClickListener(new View.OnClickListener() {

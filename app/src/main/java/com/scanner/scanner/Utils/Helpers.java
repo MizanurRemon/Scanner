@@ -16,6 +16,8 @@ import android.util.Base64OutputStream;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.scanner.scanner.R;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -134,6 +136,17 @@ public class Helpers {
         }
 
         return displayName;
+    }
+
+    public static Bitmap getImageFromString(String imgString){
+
+        byte[] imageBytes = Base64.decode(imgString, Base64.DEFAULT);
+      /*  String imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+
+        //decode base64 string to image
+        imageBytes = Base64.decode(imageString, Base64.DEFAULT);*/
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+
     }
 
 }
