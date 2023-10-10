@@ -8,7 +8,7 @@ import com.scanner.scanner.Utils.Constants;
 
 public class SessionManagement {
 
-    SharedPreferences sharedPreferences;
+    static SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
     String SHARED_PREF_NAME = "SCANNER_";
@@ -32,7 +32,7 @@ public class SessionManagement {
         editor.commit();
     }
 
-    public String getAccessToken() {
+    public static String getAccessToken() {
         return sharedPreferences.getString(Constants.ACCESS_TOKEN, "-1");
     }
 

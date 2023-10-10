@@ -1,7 +1,12 @@
 package com.scanner.scanner.Network.Private;
 
+import static com.scanner.scanner.Sessions.SessionManagement.getAccessToken;
+
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.scanner.scanner.Sessions.SessionManagement;
 import com.scanner.scanner.Utils.URLConstants;
 
 import java.io.IOException;
@@ -16,18 +21,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PrivateRetrofitConfig {
     public static OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
-            .addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request originalRequest = chain.request();
+            .addInterceptor(chain -> {
 
-                    Request newRequest = originalRequest.newBuilder()
-                            .header("Authorization", "Bearer YourAuthToken")
-                            .header("Custom-Header", "CustomValue")
-                            .build();
+                Request newRequest = chain.request().newBuilder()
+                        .header("Authorization", "Bearer "+getAccessToken())
+                        .build();
 
-                    return chain.proceed(newRequest);
-                }
+                return chain.proceed(newRequest);
             })
             .connectTimeout(100, TimeUnit.SECONDS)
             .readTimeout(100, TimeUnit.SECONDS)
@@ -44,19 +44,4 @@ public class PrivateRetrofitConfig {
     }
 
 
-    /*private static Retrofit retrofit = null;
-
-    public static Retrofit getRetrofit(String baseUrl) {
-
-        Gson gson = new GsonBuilder().setLenient().create();
-
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
-        }
-        return retrofit;
-    }*/
 }

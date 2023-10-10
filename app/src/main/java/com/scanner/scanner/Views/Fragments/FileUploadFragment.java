@@ -11,9 +11,12 @@ import static com.scanner.scanner.Utils.Helpers.uriToBase64;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -37,10 +40,12 @@ import android.widget.Toast;
 import com.scanner.scanner.Adapter.FileAdapter;
 import com.scanner.scanner.Model.CommonResponse;
 import com.scanner.scanner.Model.FileResponse;
+import com.scanner.scanner.R;
 import com.scanner.scanner.Remote.FileUpload.FileUploadViewModel;
 import com.scanner.scanner.Sessions.SessionManagement;
 import com.scanner.scanner.Utils.Constants;
 import com.scanner.scanner.Views.Activity.ImageCropperActivity;
+import com.scanner.scanner.Views.Activity.LoginActivity;
 import com.scanner.scanner.databinding.FragmentFileUploadBinding;
 
 import java.text.SimpleDateFormat;
@@ -69,6 +74,8 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
     FileUploadViewModel fileUploadViewModel;
     SessionManagement sessionManagement;
+
+    Dialog loader;
 
     @SuppressLint("Range")
     @Override
@@ -176,8 +183,8 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
             @Override
             public void onClick(View v) {
 
-                if (fileList.isEmpty()) {
-                    Toast.makeText(getActivity(), "No image selected", Toast.LENGTH_SHORT).show();
+                if (fileList.isEmpty() || binding.invoiceNoText.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(getActivity(), "missing parameter", Toast.LENGTH_SHORT).show();
                 } else {
 
                     Map<String, Object> body = new HashMap<>();
@@ -186,10 +193,13 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
                     body.put(Constants.INVOICE_NO, binding.invoiceNoText.getText().toString().trim());
                     body.put(Constants.FILES, fileList);
 
-                    fileUploadViewModel.uploadInvoice(body).observe(getViewLifecycleOwner(), new Observer<CommonResponse>() {
+                    loader.show();
+                    fileUploadViewModel.uploadInvoice(body, getActivity()).observe(getViewLifecycleOwner(), new Observer<CommonResponse>() {
                         @Override
                         public void onChanged(CommonResponse commonResponse) {
+                            loader.dismiss();
 
+                            Toast.makeText(getActivity(), commonResponse.statusCode, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -229,6 +239,13 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
         fileUploadViewModel = new ViewModelProvider(getActivity()).get(FileUploadViewModel.class);
         binding.imageListView.setHasFixedSize(true);
         binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+
+
+        loader = new Dialog(getActivity());
+        loader.setContentView(R.layout.loader);
+        loader.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        loader.setCancelable(false);
+
     }
 
     private void imageSelect() {

@@ -37,7 +37,7 @@ public class Helpers {
     }
 
     public static String fileImageUriToBase64(Uri imageUri, ContentResolver resolver) {
-        Log.d("dataxx", "fileUriToBase64: ");
+       // Log.d("dataxx", "fileUriToBase64: ");
         try {
             final InputStream imageStream = resolver.openInputStream(imageUri);
             final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
@@ -45,7 +45,7 @@ public class Helpers {
             selectedImage.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] b = byteArrayOutputStream.toByteArray();
 
-            Log.d("dataxx", "fileUriToBase64: " + Base64.encodeToString(b, Base64.DEFAULT));
+           // Log.d("dataxx", "fileUriToBase64: " + Base64.encodeToString(b, Base64.DEFAULT));
             return Base64.encodeToString(b, Base64.DEFAULT);
         } catch (Exception e) {
             Log.d("dataxx", "ERORXX: " + e.getMessage());
