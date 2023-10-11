@@ -3,6 +3,7 @@ package com.scanner.scanner.Views.Fragments;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.scanner.scanner.Utils.Constants.IMAGE_REQ_CODE;
+import static com.scanner.scanner.Utils.Constants.RESULT;
 import static com.scanner.scanner.Utils.Helpers.getFileExtension;
 import static com.scanner.scanner.Utils.Helpers.getFileName;
 import static com.scanner.scanner.Utils.Helpers.saveImageToGallery;
@@ -12,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,6 +31,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,12 +86,33 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
         if (resultCode != RESULT_CANCELED) {
             if (resultCode == RESULT_OK && requestCode == IMAGE_REQ_CODE) {
 
-                Bundle bundle = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) bundle.get("data");
 
-                Uri uri = saveImageToGallery(imageBitmap);
+                String result = data.getStringExtra(RESULT);
+                if (result != null) {
+                    filepath = Uri.parse(result);
+                    Uri uri = filepath;
 
-                if (uri != null) {
+                    if (uri != null) {
+                        String str = uriToBase64(uri, getActivity());
+                        String ext = getFileExtension(getActivity(), uri);
+                        fileList.add(new FileResponse(getFileName(uri, getActivity()), str, ext));
+
+                        setFileAdapter(fileList);
+
+                        Toast.makeText(getActivity(), getFileName(uri, getActivity()) + " file picked", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), " file not picked", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getActivity(), " file not picked", Toast.LENGTH_SHORT).show();
+                }
+
+                //  Bundle bundle = data.getExtras();
+                //  Bitmap imageBitmap = (Bitmap) bundle.get("data");
+
+                // Uri uri = saveImageToGallery(imageBitmap);
+
+               /* if (uri != null) {
                     String str = uriToBase64(uri, getActivity());
                     String ext = getFileExtension(getActivity(), uri);
                     fileList.add(new FileResponse(getFileName(uri, getActivity()), str, ext));
@@ -98,7 +122,7 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
                     Toast.makeText(getActivity(), getFileName(uri, getActivity()) + " file picked", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getActivity(), " file not picked", Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
             } else if (resultCode == RESULT_OK && requestCode == 12) {
 
@@ -201,6 +225,9 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
                             if (commonResponse.statusCode.equals("200")) {
                                 message = "successfully uploaded";
+                                binding.invoiceNoText.setText("");
+                                fileList.clear();
+                                setFileAdapter(fileList);
                             } else {
                                 message = "failed";
                             }
@@ -245,7 +272,7 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
         fileUploadViewModel = new ViewModelProvider(getActivity()).get(FileViewModel.class);
         binding.imageListView.setHasFixedSize(true);
         binding.imageListView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
-
+        binding.imageListView.setItemViewCacheSize(100);
 
         loader = new Dialog(getActivity());
         loader.setContentView(R.layout.loader);
@@ -265,16 +292,16 @@ public class FileUploadFragment extends Fragment implements FileAdapter.OnImageI
 
                 if (items[i].equals("Camera")) {
 
-                    /*ContentValues values = new ContentValues();
+                    ContentValues values = new ContentValues();
                     values.put(MediaStore.Images.Media.TITLE, "New Picture");
                     values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
                     filepath = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, filepath);*/
+                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, filepath);
 
-                    // cameraContent.launch(cameraIntent);
-                    Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent, IMAGE_REQ_CODE);
+                    cameraContent.launch(cameraIntent);
+                    /*Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, IMAGE_REQ_CODE);*/
 
                 } else if (items[i].equals("Gallery")) {
 

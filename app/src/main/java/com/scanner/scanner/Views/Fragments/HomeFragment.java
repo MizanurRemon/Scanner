@@ -63,6 +63,7 @@ public class HomeFragment extends Fragment implements FileListAdapter.OnPDFItemC
     private void initView(View view) {
         binding.itemView.setHasFixedSize(true);
         binding.itemView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.itemView.setItemViewCacheSize(100);
         fileViewModel = new ViewModelProvider(getActivity()).get(FileViewModel.class);
     }
 

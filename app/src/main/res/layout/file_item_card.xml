@@ -41,7 +41,7 @@
             android:drawableLeft="@drawable/baseline_file_download_24"
             android:drawableTint="@color/white"
             android:foreground="?android:attr/selectableItemBackground"
-            android:text="PDF"
+            android:text="Download"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/imageView"
             app:layout_constraintTop_toBottomOf="@id/fileNameText" />
