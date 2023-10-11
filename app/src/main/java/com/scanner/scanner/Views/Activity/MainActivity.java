@@ -15,18 +15,21 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.scanner.scanner.R;
+import com.scanner.scanner.Sessions.SessionManagement;
 import com.scanner.scanner.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActivityMainBinding binding;
     ActionBarDrawerToggle actionBarDrawerToggle;
-
+    SessionManagement sessionManagement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            binding.versionText.setText(getResources().getString(R.string.version)+": "+packageInfo.versionName + "+" + String.valueOf(packageInfo.versionCode));
+            binding.versionText.setText(getResources().getString(R.string.version) + ": " + packageInfo.versionName + "+" + String.valueOf(packageInfo.versionCode));
         } catch (Exception ignored) {
 
         }
@@ -74,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initView() {
+
+        sessionManagement = new SessionManagement(getApplicationContext());
         binding.navigationView.bringToFront();
         binding.navigationView.setNavigationItemSelectedListener(this);
         binding.navigationView.inflateHeaderView(R.layout.menu_header);
@@ -81,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
         binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
+
+        //  Toast.makeText(this, sessionManagement.getAccessToken()+" "+sessionManagement.getUserType(), Toast.LENGTH_SHORT).show();
+
+     //   Log.d("dataxx", "token: "+ SessionManagement.getAccessToken());
 
     }
 
@@ -102,8 +111,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (item.getItemId() == R.id.nav_profile) {
             findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_profile);
         } else if (item.getItemId() == R.id.nav_logout) {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
+
+            sessionManagement.removeUser();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         } else if (item.getItemId() == R.id.nav_reset_password) {
             findNavController(MainActivity.this, R.id.nav_host_fragment).navigate(R.id.fragment_reset_password);

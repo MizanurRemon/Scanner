@@ -36,6 +36,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -71,9 +74,9 @@ dependencies {
     //noinspection GradleDependency
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
-//    implementation 'com.github.dhaval2404:imagepicker:2.1'
-//    implementation 'com.github.yalantis:ucrop:2.2.6-native'
     implementation 'com.github.krokyze:ucropnedit:2.2.8'
 
+   // implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.github.mhiew:android-pdf-viewer:3.2.0-beta.3'
 
 }

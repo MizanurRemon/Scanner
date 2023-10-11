@@ -13,9 +13,7 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -30,35 +28,31 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Views.Activity.ImageCropperActivity"
-            android:exported="false" />
-
-
-        <activity
-            android:name=".Views.Activity.LoginActivity"
-            android:exported="false">
-
-           <!-- <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-
-        </activity>
-        <activity
-            android:name=".Views.Activity.MainActivity"
+            android:name=".Views.Activity.SplashActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".Views.Activity.PdfViewerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_pdf_viewer"
+            android:theme="@style/Theme.Scanner" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Views.Activity.ImageCropperActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Views.Activity.LoginActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".Views.Activity.MainActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>
